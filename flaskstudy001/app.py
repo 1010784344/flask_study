@@ -2,7 +2,7 @@ from flask import Flask
 from flask import render_template
 
 # 创建了一个flask 类的实例
-app = Flask(__name__)
+app =  Flask(__name__)
 
 # 路由
 @app.route('/')
@@ -30,7 +30,7 @@ def beauty_world():
 
 
 # 指定 URL 只接受什么样方法
-@app.route('/about/',methods=['GET', 'POST'])
+@app.route('/about',methods=['GET', 'POST'])
 def about():
     return 'The about page'
 
