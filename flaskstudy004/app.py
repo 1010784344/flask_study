@@ -7,7 +7,7 @@ import sqlite3
 app = Flask(__name__)
 
 # app 里指定数据库路径
-app.config['DATABASE'] = 'database.db'
+app.config['DATABASE'] = r'D:\flaskstudy004\database.db'
 
 
 def connect_db():
@@ -26,26 +26,50 @@ def init_db( ):
             db.cursor().executescript(f.read())
         db.commit()
 
-
+# 增
 def insert_user_to_db(user):
     sql = 'insert into users (name,pwd,email,age,birthday,face) values (?,?,?,?,?,?)'
-    args = [user.name, user.pwd, user.email, user.age, user.birthday, user.face]
+    args = user.to_list()
     g.db.execute(sql, args)
     g.db.commit()
-    print(1111)
 
+# 删
+def delete_user_to_db(user_name):
+    sql = 'delete from users where name = ?'
+    args = [user_name]
+    g.db.execute(sql, args)
+    g.db.commit()
 
+# 查
 def query_user_to_db():
-    # sql = 'insert into entries (name,pwd,email,age,birthday,face) values (?,?,?,?,?,?)'
-    # args = [user.name,user.pwd,user.email,user.age,user.birthday,user.face]
+
+    all_user = []
     sql = 'select * from users'
     args = []
     sql_select = g.db.execute(sql,args)
-    print(sql_select)
-    print(333)
-    for item in sql_select:
-        print(item)
-        print(2222)
+    for item in sql_select.fetchall():
+        user = User()
+        user.from_list(item[1:])
+        all_user.append(user)
+    return all_user
+
+
+# 按条件进行查询
+def query_user_by_name(user_name):
+
+    sql = 'select * from users where name = ?'
+    args = [user_name]
+    sql_select = g.db.execute(sql,args)
+    item = sql_select.fetchall()
+    # 非空判断
+    if len(item) < 1:
+        return None
+
+    user = User()
+    user.from_list(item[0][1:])
+
+    return user
+
 
 
 @app.before_request
@@ -87,7 +111,27 @@ def user_regist():
 # 登录
 @app.route('/login/',methods=['get','post'])
 def user_login():
-    query_user_to_db()
+    # 全部查询
+    all = query_user_to_db()
+    for user in all:
+        print(user.to_list())
+    print('========================')
+    # 按条件查询
+    users = query_user_by_name('fsdf')
+    if users:
+        print(users.to_list())
+    # 删除
+    delete_user_to_db('fsdf')
+    print('========================')
+    # 全部查询
+    all = query_user_to_db()
+    for user in all:
+        print(user.to_list())
+
+
+
+
+
     return render_template('user_login.html')
 
 if __name__ == '__main__':
