@@ -5,6 +5,16 @@
         <h2>用户登录</h2>
 
       </div>
+
+
+     {% for message in get_flashed_messages(category_filter=['err']) %}
+        <h3 style="color: red">{{ message }}</h3>
+    {% endfor %}
+    {% for message in get_flashed_messages(category_filter=['ok']) %}
+        <h3 style="color: green">{{ message }}</h3>
+    {% endfor %}
+
+
  <form role="form" method="post" class="col-md-6 col-md-offset-2">
         <div class="form-group">
             <label for = 'user_name'>用户名</label>
