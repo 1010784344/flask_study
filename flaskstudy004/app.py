@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask,redirect,url_for,g,flash,get_flashed_messages,session
+from flask import Flask,redirect,url_for,g,flash,get_flashed_messages,session,make_response
 from flask import render_template,request
 from models import User
 import sqlite3
@@ -96,8 +96,14 @@ def teardown_request(exception):
 
 @app.route('/')
 def index():
+    # 打印session
     print(session)
-    return render_template('index.html')
+
+    # 制造响应设置cookie
+    resp = make_response(render_template('index.html'))
+    resp.set_cookie('qqqqqqq', 'ssssssss')
+
+    return resp
 
 # 注册
 @app.route('/regist/',methods=['get','post'])
@@ -160,6 +166,20 @@ def log_out():
 
     session.pop('user_name',None)
     return redirect(url_for('index'))
+
+# # 定制错误页面（1）
+# @app.errorhandler(404)
+# def page_not_found(error):
+#     return render_template('page_not_found.html'), 404
+
+# 定制错误页面（2）
+@app.errorhandler(404)
+def page_not_found(error):
+    resp = make_response(render_template('page_not_found.html'), 404)
+    resp.headers['X-Something'] = 'A value'
+    return resp
+
+
 if __name__ == '__main__':
     # 调试模式
     app.run(debug=True)
