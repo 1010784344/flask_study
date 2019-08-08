@@ -95,7 +95,7 @@ def teardown_request(exception):
         g.db.close()
 
 
-# 检验登录装饰器
+# 检验登录装饰器（访问控制）
 def user_login_req(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -147,6 +147,68 @@ def user_regist():
 @user_login_req
 def user_center():
     return render_template('user_center.html')
+
+
+# 个人信息详情
+@app.route('/detail/',methods=['GET'])
+@user_login_req
+def user_detail():
+    user = query_user_by_name(session.get('user_name'))
+    return render_template('user_detail.html',user = user)
+
+
+# 个人修改密码
+@app.route('/pwd/',methods=['GET','POST'])
+@user_login_req
+def user_pwd():
+    if request.method == 'POST':
+
+        old_pwd = request.form['old_pwd']
+        new_pwd = request.form['new_pwd']
+        user = query_user_by_name(session.get('user_name'))
+        if str(old_pwd) != str(user.pwd):
+            flash('旧密码输入有误！',category='err')
+            return render_template('user_pwd.html')
+        else:
+            user.pwd = new_pwd
+            update_user_to_db(user.name,user)
+            # 修改完密码之后，删掉用户信息，让他重新登录
+            session.pop('user_name', None)
+            flash('修改密码成功，请重新登录！',category='ok')
+            return redirect(url_for('user_login',username = user.name))
+    return render_template('user_pwd.html')
+
+
+# 个人修改资料
+@app.route('/info/',methods=['GET','POST'])
+@user_login_req
+def user_info():
+    user = query_user_by_name(session['user_name'])
+    if request.method == "POST":
+
+        oldname = user.name
+        user.name = request.form['user_name']
+        user.email = request.form['user_email']
+        user.age = request.form['user_age']
+        user.face = request.form['user_face']
+        user.birthday = request.form['user_birth']
+        update_user_to_db(oldname,user)
+
+        session['user_name'] = user.name
+
+        return redirect(url_for('user_detail'))
+    return render_template('user_info.html',user = user)
+
+
+# 注销个人账户
+@app.route('/del/',methods=['GET','POST'])
+@user_login_req
+def user_del():
+    if request.method == 'POST':
+        delete_user_to_db(session.get('user_name'))
+        return redirect(url_for('log_out'))
+    return render_template('user_del.html')
+
 
 # 登录
 @app.route('/login/',methods=['get','post'])
