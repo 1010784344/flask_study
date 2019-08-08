@@ -3,11 +3,13 @@ from flask import Flask,redirect,url_for,g,flash,get_flashed_messages,session,ma
 from flask import render_template,request
 from models import User
 import sqlite3
+# 协助定义装饰器
+from functools import wraps
 
 app = Flask(__name__)
 
 # app 里指定数据库路径
-app.config['DATABASE'] = r'D:\flaskstudy004\database.db'
+app.config['DATABASE'] = r'D:\flaskstudy005\database.db'
 # 要使用session的话，必须要设置secret key
 app.config['SECRET_KEY'] = r'de lu da shu 666'
 
@@ -93,6 +95,16 @@ def teardown_request(exception):
         g.db.close()
 
 
+# 检验登录装饰器
+def user_login_req(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not 'user_name' in session:
+            # 仅仅做个展示，在没有访问权跳转到的登录页面，显示你刚才要访问的页面链接
+            return redirect(url_for('user_login', next = request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 @app.route('/')
 def index():
@@ -132,6 +144,7 @@ def user_regist():
 
 # 个人中心
 @app.route('/usercenter/',methods=['GET'])
+@user_login_req
 def user_center():
     return render_template('user_center.html')
 
@@ -163,6 +176,7 @@ def user_login():
     return render_template('user_login.html')
 # 退出
 @app.route('/logout/',methods=['GET'])
+@user_login_req
 def log_out():
 
     session.pop('user_name',None)
