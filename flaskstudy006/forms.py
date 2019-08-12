@@ -2,9 +2,9 @@
 # 用来存放表单的
 from flask_wtf import FlaskForm
 # 导入字段
-from wtforms import StringField,PasswordField,IntegerField,DateField,FileField
+from wtforms import StringField,PasswordField,IntegerField,DateField,FileField,SubmitField
 # 验证器(用来对输入的数据进行一些限制)
-from wtforms.validators import DataRequired,Length,NumberRange
+from wtforms.validators import DataRequired,Length,NumberRange,Email
 
 
 # 注册表单的一个form
@@ -20,7 +20,7 @@ class RegistForm(FlaskForm):
                                 , 'placeholder': '输入用户密码'})
 
     user_email = StringField(label='用户邮箱', validators=[DataRequired(message='用户邮箱不能为空！'),
-                                                     Length(min=3, max=15, message='用户名长度在3到15个字符之间！')],
+                                                       Email(message='用户邮箱格式不对！')],
                            render_kw={'id': 'user_email', 'class': 'form-control'
                                , 'placeholder': '输入用户邮箱'})
 
@@ -32,7 +32,11 @@ class RegistForm(FlaskForm):
                             render_kw={'id': 'user_birth', 'class': 'form-control'
                                 , 'placeholder': '输入用户生日'})
 
-    user_face = DateField(label='提交表单',
+    user_face = FileField(label='用户头像', validators=[],
+                           render_kw={'id': 'user_face', 'class': 'form-control'
+                               , 'placeholder': '输入用户头像'})
+
+    submit = SubmitField(label='提交表单',
                             render_kw={'class': 'btn btn-success','value':'注册'
                                 , })
 

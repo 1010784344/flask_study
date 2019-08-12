@@ -6,6 +6,9 @@ import sqlite3
 # 协助定义装饰器
 from functools import wraps
 
+
+from forms import RegistForm
+
 app = Flask(__name__)
 
 # app 里指定数据库路径
@@ -116,7 +119,7 @@ def index():
 # 注册
 @app.route('/regist/',methods=['get','post'])
 def user_regist():
-
+    form = RegistForm()
     if request.method == 'POST':
         # 获取查询参数
         print(request.form)
@@ -140,7 +143,7 @@ def user_regist():
         # 注册完成之后，重定向到登录页面,并把用户名也带过去（携带查询参数(get 方法)）
         return redirect(url_for('user_login',username = user.name ))
 
-    return render_template('user_regist.html')
+    return render_template('user_regist.html',form=form)
 
 # 个人中心
 @app.route('/usercenter/',methods=['GET'])
