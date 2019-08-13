@@ -17,34 +17,16 @@
 
  <form role="form" method="post" class="col-md-6 col-md-offset-2">
         <div class="form-group">
-
-            {{ form.user_name.label }}
-            {{ form.user_name(value=request.args.username) }}
-
-            {#打印验证器里面的错误信息#}
-            {% for error in form.user_name.errors %}
-            <p style="color: red">{{ error }}</p>
-            {% endfor %}
-
+            <label for = 'user_name'>用户名</label>
+            <input type = "text" id = "user_name" name = "user_name" value="{{ request.args.username }}" class = "form-control">
         </div>
         <div class="form-group">
-
-            {{ form.user_pwd.label }}
-            {{ form.user_pwd }}
-
-            {#打印验证器里面的错误信息#}
-            {% for error in form.user_pwd.errors %}
-            <p style="color: red">{{ error }}</p>
-            {% endfor %}
-
-
+            <label for = 'user_pwd'>用户密码</label>
+            <input type = "password" id = "user_pwd" name = "user_pwd" class = "form-control">
         </div>
 
         <div class="form-group">
-
-            {{ form.csrf_token }}
-        {{ form.submit }}
-
+            <input type = "submit" class = "btn btn-success" name = "submit" value="登录" >
         </div>
     </form>
 {% endblock %}

@@ -10,39 +10,55 @@ from wtforms.validators import DataRequired,Length,NumberRange,Email
 # 注册表单的一个form
 class RegistForm(FlaskForm):
 
-    user_name = StringField(label='用户名',validators=[DataRequired(message='用户名不能为空！'),
-    Length(min=3,max=15,message='用户名长度在3到15个字符之间！')],render_kw={'id':'user_name','class':'form-control'
+    user_name = StringField(label='用户名',
+                            validators=[DataRequired(message='用户名不能为空！'),
+                                                   Length(min=3,max=15,message='用户名长度在3到15个字符之间！')],
+                            render_kw={'id':'user_name','class':'form-control'
                                                                 ,'placeholder':'输入用户名'})
 
-    user_pwd = PasswordField(label='用户密码', validators=[DataRequired(message='用户密码不能为空！'),
+    user_pwd = PasswordField(label='用户密码',
+                             validators=[DataRequired(message='用户密码不能为空！'),
                                                      Length(min=3, max=5, message='用户密码长度在3到5个字符之间！')],
                             render_kw={'id': 'user_pwd', 'class': 'form-control'
                                 , 'placeholder': '输入用户密码'})
 
-    user_email = StringField(label='用户邮箱', validators=[DataRequired(message='用户邮箱不能为空！'),
+    user_email = StringField(label='用户邮箱',
+                             validators=[DataRequired(message='用户邮箱不能为空！'),
                                                        Email(message='用户邮箱格式不对！')],
-                           render_kw={'id': 'user_email', 'class': 'form-control'
+                             render_kw={'id': 'user_email', 'class': 'form-control'
                                , 'placeholder': '输入用户邮箱'})
 
-    user_age = IntegerField(label='用户年龄', validators=[DataRequired(message='用户密码不能为空！'),
+    user_age = IntegerField(label='用户年龄',
+                            validators=[DataRequired(message='用户密码不能为空！'),
                                                       NumberRange(min=18,max=70,message='用户年龄在18到70之间！')],
-                             render_kw={'id': 'user_age', 'class': 'form-control'
+                            render_kw={'id': 'user_age', 'class': 'form-control'
                                  , 'placeholder': '输入用户年龄'})
-    user_birth = DateField(label='用户生日', validators=[DataRequired(message='用户生日不能为空！')],
+    user_birth = DateField(label='用户生日',
+                            validators=[DataRequired(message='用户生日不能为空！')],
                             render_kw={'id': 'user_birth', 'class': 'form-control'
                                 , 'placeholder': '输入用户生日'})
 
-    user_face = FileField(label='用户头像', validators=[],
+    user_face = FileField(label='用户头像',
+                           validators=[],
                            render_kw={'id': 'user_face', 'class': 'form-control'
                                , 'placeholder': '输入用户头像'})
 
     submit = SubmitField(label='提交表单',
-                            render_kw={'class': 'btn btn-success','value':'注册'
-                                , })
+                         render_kw={'class': 'btn btn-success','value':'注册'})
 
+# 登录表单
+class LoginForm(FlaskForm):
+    user_name = StringField(label='用户名',
+                            validators=[DataRequired(message='用户名不能为空！'),
+                                        ],
+                            render_kw={'id': 'user_name', 'class': 'form-control'
+                                , 'placeholder': '输入用户名'})
 
+    user_pwd = PasswordField(label='用户密码',
+                             validators=[DataRequired(message='用户密码不能为空！'),
+                                         ],
+                             render_kw={'id': 'user_pwd', 'class': 'form-control'
+                                 , 'placeholder': '输入用户密码'})
 
-
-
-
-
+    submit = SubmitField(
+                         render_kw={'class': 'btn btn-success', 'value': '登录'})
