@@ -27,31 +27,16 @@
 
             <form role="form" method="post" >
                 <div class="form-group">
-
-                    {{ form.old_pwd.label }}
-                    {{ form.old_pwd }}
-
-                    {#打印验证器里面的错误信息#}
-                    {% for error in form.old_pwd.errors %}
-                    <p style="color: red">{{ error }}</p>
-                    {% endfor %}
-
+                    <label for = 'old_pwd'>用户旧密码</label>
+                    <input type = "password" id = "old_pwd" name = "old_pwd" class = "form-control">
                 </div>
                 <div class="form-group">
-
-                    {{ form.new_pwd.label }}
-                    {{ form.new_pwd }}
-
-                    {#打印验证器里面的错误信息#}
-                    {% for error in form.new_pwd.errors %}
-                    <p style="color: red">{{ error }}</p>
-                    {% endfor %}
-
+                    <label for = 'new_pwd'>用户新密码</label>
+                    <input type = "password" id = "new_pwd" name = "new_pwd" class = "form-control">
                 </div>
 
                 <div class="form-group">
-                    {{ form.csrf_token }}
-                    {{ form.submit }}
+                    <input type = "submit" class = "btn btn-success" name = "submit" value="修改" >
         </div>
     </form>
 

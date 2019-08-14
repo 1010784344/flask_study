@@ -7,7 +7,7 @@ import sqlite3
 from functools import wraps
 
 
-from forms import RegistForm,LoginForm
+from forms import RegistForm,LoginForm,PwdForm,InfoForm
 
 app = Flask(__name__)
 
@@ -111,6 +111,12 @@ def user_login_req(f):
 
 @app.route('/')
 def index():
+
+    # 全部查询
+    all = query_user_to_db()
+    for user in all:
+        print(user.to_list())
+
     # 制造响应设置cookie
     resp = make_response(render_template('index.html'))
 
@@ -165,14 +171,15 @@ def user_detail():
 @app.route('/pwd/',methods=['GET','POST'])
 @user_login_req
 def user_pwd():
-    if request.method == 'POST':
+    form = PwdForm()
+    if form.validate_on_submit():
 
         old_pwd = request.form['old_pwd']
         new_pwd = request.form['new_pwd']
         user = query_user_by_name(session.get('user_name'))
         if str(old_pwd) != str(user.pwd):
             flash('旧密码输入有误！',category='err')
-            return render_template('user_pwd.html')
+            return render_template('user_pwd.html',form=form)
         else:
             user.pwd = new_pwd
             update_user_to_db(user.name,user)
@@ -180,15 +187,17 @@ def user_pwd():
             session.pop('user_name', None)
             flash('修改密码成功，请重新登录！',category='ok')
             return redirect(url_for('user_login',username = user.name))
-    return render_template('user_pwd.html')
+    return render_template('user_pwd.html',form=form)
 
 
 # 个人修改资料
 @app.route('/info/',methods=['GET','POST'])
 @user_login_req
 def user_info():
+    form = InfoForm()
+
     user = query_user_by_name(session['user_name'])
-    if request.method == "POST":
+    if form.validate_on_submit():
 
         oldname = user.name
         user.name = request.form['user_name']
@@ -201,7 +210,7 @@ def user_info():
         session['user_name'] = user.name
 
         return redirect(url_for('user_detail'))
-    return render_template('user_info.html',user = user)
+    return render_template('user_info.html',user = user,form=form)
 
 
 # 注销个人账户
@@ -218,11 +227,6 @@ def user_del():
 @app.route('/login/',methods=['get','post'])
 def user_login():
     form = LoginForm()
-
-    # 全部查询
-    all = query_user_to_db()
-    for user in all:
-        print(user.to_list())
 
     if form.validate_on_submit():
         user_name = request.form['user_name']
