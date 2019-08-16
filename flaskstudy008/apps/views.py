@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # 视图函数存放,views 只负责带有路由装饰器的视图
 import os
+import shutil
 # 协助定义装饰器
 from functools import wraps
 
@@ -11,9 +12,9 @@ from apps import app
 from apps.models import User
 from apps.forms import RegistForm,LoginForm,PwdForm,InfoForm
 from apps.sqlite_manage import query_user_to_db,insert_user_to_db,query_user_by_name,delete_user_to_db,update_user_to_db
-
 from apps.utils import create_folder
-
+from apps.utils import secure_filename_with_uuid,check_files_extension,ALLOWED_IMAGE_EXTENSIONS
+from werkzeug.utils import secure_filename
 # 检验登录装饰器（访问控制）
 def user_login_req(f):
     @wraps(f)
@@ -43,8 +44,11 @@ def index():
 def user_regist():
     form = RegistForm()
     if form.validate_on_submit():
-        # 获取查询参数
-        print(request.form)
+
+        # 检测文件后缀
+        if not check_files_extension([form.data['user_face'].filename],ALLOWED_IMAGE_EXTENSIONS):
+            flash(u'头像文件有误，请检查！', category='err')
+            return render_template('user_regist.html', form=form)
 
         user = User()
         # 以 wt-form 方式表单数据
@@ -57,8 +61,8 @@ def user_regist():
 
         # 获取上传文件信息
         filestorage = request.files['user_face']
-        # 获取文件名
-        user.face = filestorage.filename
+        # 获取文件名并进行检查
+        user.face = secure_filename_with_uuid(filestorage.filename)
 
         # 如果用户已经存在了，就不执行插入操作
         if query_user_by_name(user.name):
@@ -91,7 +95,8 @@ def user_center():
 @user_login_req
 def user_detail():
     user = query_user_by_name(session.get('user_name'))
-    return render_template('user_detail.html',user = user)
+    uploads_folder = app.config['UPLOADS_DIR_ALT']
+    return render_template('user_detail.html',user = user,uploads_folder=uploads_folder)
 
 
 # 个人修改密码
@@ -145,6 +150,10 @@ def user_info():
 @user_login_req
 def user_del():
     if request.method == 'POST':
+        # 删除用户的头像文件
+        delpath = os.path.join(app.config['UPLOADS_DIR'],session.get('user_name'))
+        shutil.rmtree(delpath,ignore_errors=True)
+
         delete_user_to_db(session.get('user_name'))
         return redirect(url_for('log_out'))
     return render_template('user_del.html')
