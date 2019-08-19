@@ -130,17 +130,34 @@ def user_info():
 
     user = query_user_by_name(session['user_name'])
     if form.validate_on_submit():
-
+        #保存旧的用户名
         oldname = user.name
         user.name = request.form['user_name']
         user.email = request.form['user_email']
         user.age = request.form['user_age']
-        user.face = request.form['user_face']
+        # user.face = request.form['user_face']
         user.birthday = request.form['user_birth']
-        update_user_to_db(oldname,user)
 
+        filestorage = request.files['user_face']
+
+        # 如果更改了文件
+        if filestorage.filename != '':
+            # 检测文件后缀
+            if not check_files_extension([form.user_face.data.filename],ALLOWED_IMAGE_EXTENSIONS):
+                flash(u'头像文件名不对！', category='err')
+                return redirect(url_for('user_info'))
+            # 删除旧文件，保存新文件
+            user_folder = os.path.join(app.config['UPLOADS_DIR'],oldname)
+            os.remove(path=os.path.join(user_folder,user.face))
+            user.face = secure_filename_with_uuid(filestorage.filename)
+            filestorage.save(os.path.join(user_folder,user.face))
+
+        # 方便静态资源的读取（针对用户名修改的情况）
+        if oldname != user.name:
+            os.rename(os.path.join(app.config['UPLOADS_DIR'],oldname),os.path.join(app.config['UPLOADS_DIR'],user.name))
+
+        update_user_to_db(oldname, user)
         session['user_name'] = user.name
-
         return redirect(url_for('user_detail'))
     return render_template('user_info.html',user = user,form=form)
 

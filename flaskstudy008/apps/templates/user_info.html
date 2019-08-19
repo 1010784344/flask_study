@@ -26,7 +26,7 @@
                     <h3 style="color: green">{{ message }}</h3>
                 {% endfor %}
 
-                <form role="form" method="post" >
+                <form role="form" method="post" enctype="multipart/form-data" >
                     <div class="form-group">
 
                         {{ form.user_name.label }}
