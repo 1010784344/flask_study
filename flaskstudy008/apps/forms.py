@@ -1,8 +1,11 @@
 # -*- coding: UTF-8 -*-
 # 用来存放表单的
 from flask_wtf import FlaskForm
+# 文件上传相关的改造
+from flask_wtf.file import FileField,FileAllowed,FileRequired
+
 # 导入字段
-from wtforms import StringField,PasswordField,IntegerField,DateField,FileField,SubmitField
+from wtforms import StringField,PasswordField,IntegerField,DateField,SubmitField
 # 验证器(用来对输入的数据进行一些限制)
 from wtforms.validators import DataRequired,Length,NumberRange,Email
 
@@ -39,7 +42,7 @@ class RegistForm(FlaskForm):
                                 , 'placeholder': '输入用户生日'})
 
     user_face = FileField(label='用户头像',
-                           validators=[DataRequired(message='用户头像不能为空！')],
+                           validators=[FileRequired(message='用户头像不能为空！'),FileAllowed(['png','jpg'],'只允许的图片格式为 png，jpg ！')],
                            render_kw={'id': 'user_face', 'class': 'form-control'
                                , 'placeholder': '输入用户头像'})
 
@@ -108,7 +111,7 @@ class InfoForm(FlaskForm):
                                 , 'placeholder': '输入用户生日'})
 
     user_face = FileField(label='用户头像',
-                           validators=[],
+                           validators=[FileAllowed(['png','jpg'],'只允许的图片格式为 png，jpg ！')],
                            render_kw={'id': 'user_face', 'class': 'form-control'
                                , 'placeholder': '输入用户头像'})
 

@@ -45,11 +45,6 @@ def user_regist():
     form = RegistForm()
     if form.validate_on_submit():
 
-        # 检测文件后缀
-        if not check_files_extension([form.data['user_face'].filename],ALLOWED_IMAGE_EXTENSIONS):
-            flash(u'头像文件有误，请检查！', category='err')
-            return render_template('user_regist.html', form=form)
-
         user = User()
         # 以 wt-form 方式表单数据
         user.name = form.data['user_name']
@@ -142,10 +137,7 @@ def user_info():
 
         # 如果更改了文件
         if filestorage.filename != '':
-            # 检测文件后缀
-            if not check_files_extension([form.user_face.data.filename],ALLOWED_IMAGE_EXTENSIONS):
-                flash(u'头像文件名不对！', category='err')
-                return redirect(url_for('user_info'))
+
             # 删除旧文件，保存新文件
             user_folder = os.path.join(app.config['UPLOADS_DIR'],oldname)
             os.remove(path=os.path.join(user_folder,user.face))
