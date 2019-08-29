@@ -4,6 +4,10 @@ from flask import Flask
 from apps.utils import create_folder
 app = Flask(__name__)
 
+
+# 设置上传文件限制
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 # 拼凑数据库的目录，只不过之前都是写的绝对路径
 APPS_DIR = os.path.dirname(__file__)
 app.config['DATABASE'] = os.path.join(APPS_DIR,'database.db')
