@@ -7,7 +7,7 @@ from flask_wtf.file import FileField,FileAllowed,FileRequired
 # 导入字段
 from wtforms import StringField,PasswordField,IntegerField,DateField,SubmitField,TextAreaField
 # 验证器(用来对输入的数据进行一些限制)
-from wtforms.validators import DataRequired,Length,NumberRange,Email
+from wtforms.validators import DataRequired,Length,NumberRange,Email,Regexp
 
 
 from flask_uploads import IMAGES
@@ -34,9 +34,14 @@ class RegistForm(FlaskForm):
                                , 'placeholder': '输入用户邮箱'})
 
     user_phone = StringField(label='用户手机',
-                            validators=[DataRequired(message='用户手机不能为空！')],
+                            validators=[DataRequired(message='用户手机不能为空！'),Regexp('1[3,4,5,8]\d{9}',message='手机号码格式不正确！')],
                             render_kw={'id': 'user_phone', 'class': 'form-control'
                                  , 'placeholder': '输入用户手机'})
+
+    user_desc = TextAreaField(label='用户描述',
+                          validators=[],
+                          render_kw={'id': 'user_desc', 'class': 'form-control'
+                              , 'placeholder': '输入用户描述'})
 
 
     user_face = FileField(label='用户头像',
@@ -44,15 +49,8 @@ class RegistForm(FlaskForm):
                            render_kw={'id': 'user_face', 'class': 'form-control'
                                , 'placeholder': '输入用户头像'})
 
-    user_desc = TextAreaField(label='用户描述',
-                          validators=[],
-                          render_kw={'id': 'user_desc', 'class': 'form-control'
-                              , 'placeholder': '输入用户描述'})
 
-    user_uuid = StringField(label='用户身份证',
-                             validators=[DataRequired(message='用户身份证不能为空！')],
-                             render_kw={'id': 'user_uuid', 'class': 'form-control'
-                                 , 'placeholder': '输入用户身份证'})
+
 
     submit = SubmitField(label='提交表单',
                          render_kw={'class': 'btn btn-success','value':'注册'})
@@ -108,15 +106,15 @@ class InfoForm(FlaskForm):
                              render_kw={'id': 'user_email', 'class': 'form-control'
                                , 'placeholder': '输入用户邮箱'})
 
-    user_age = IntegerField(label='用户年龄',
-                            validators=[DataRequired(message='用户密码不能为空！'),
-                                                      NumberRange(min=18,max=70,message='用户年龄在18到70之间！')],
-                            render_kw={'id': 'user_age', 'class': 'form-control'
-                                 , 'placeholder': '输入用户年龄'})
-    user_birth = DateField(label='用户生日',
-                            validators=[DataRequired(message='用户生日不能为空！')],
-                            render_kw={'id': 'user_birth', 'class': 'form-control'
-                                , 'placeholder': '输入用户生日'})
+    user_phone = StringField(label='用户手机',
+                             validators=[DataRequired(message='用户手机不能为空！'),Regexp('1[3,4,5,8]\d{9}',message='手机号码格式不正确！')],
+                             render_kw={'id': 'user_phone', 'class': 'form-control'
+                                 , 'placeholder': '输入用户手机'})
+
+    user_desc = TextAreaField(label='用户描述',
+                          validators=[],
+                          render_kw={'id': 'user_desc', 'class': 'form-control'
+                              , 'placeholder': '输入用户描述'})
 
     user_face = FileField(label='用户头像',
                            validators=[FileAllowed(IMAGES,'只允许的图片格式为: %s ！'%str(IMAGES))],
