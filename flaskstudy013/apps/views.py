@@ -52,7 +52,7 @@ def index():
 
 
 # 注册
-@app.route('/user/regist/',methods=['get','post'])
+@app.route('/user/regist/',methods=['GET','POST'])
 def user_regist():
     form = RegistForm()
     if form.validate_on_submit():
@@ -252,11 +252,13 @@ def album_index():
 
     return resp
 
-@app.route('/album/create')
+@app.route('/album/create',methods=['GET','POST'])
 def album_create():
 
-    resp = make_response(render_template('album_create.html'))
+    if request.method == 'POST':
+        return redirect(url_for('album_upload'))
 
+    resp = make_response(render_template('album_create.html'))
     return resp
 
 @app.route('/album/browse')
@@ -266,7 +268,20 @@ def album_browse():
 
     return resp
 
+@app.route('/album/list')
+def album_list():
 
+    resp = make_response(render_template('album_list.html'))
+
+    return resp
+
+
+@app.route('/album/upload')
+def album_upload():
+
+    resp = make_response(render_template('album_upload.html'))
+
+    return resp
 
 
 # 定制错误页面

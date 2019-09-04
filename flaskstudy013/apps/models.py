@@ -53,7 +53,7 @@ class Album(db.Model):
     title = db.Column(db.String(80), nullable=False)
     desc = db.Column(db.TEXT)
     photonum = db.Column(db.Integer, default=0)
-    privacy = db.Column(db.Integer, default=0)
+    privacy = db.Column(db.String(80), default='public')
     favornum = db.Column(db.Integer, default=0)
     clicknum = db.Column(db.Integer, default=0)
     uuid = db.Column(db.String(120), nullable=False)
