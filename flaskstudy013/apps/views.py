@@ -10,8 +10,8 @@ from flask import redirect,url_for,flash,session,make_response
 from flask import render_template,request
 
 from apps import app
-from apps.models import User
-from apps.forms import RegistForm,LoginForm,PwdForm,InfoForm
+from apps.models import User,AlbumTag,Album
+from apps.forms import RegistForm,LoginForm,PwdForm,InfoForm,AlbumInfoForm
 from apps import db
 from apps.utils import secure_filename_with_uuid
 
@@ -253,13 +253,26 @@ def album_index():
     return resp
 
 @app.route('/album/create',methods=['GET','POST'])
+@user_login_req
 def album_create():
+    form = AlbumInfoForm()
 
-    if request.method == 'POST':
+    if form.validate_on_submit():
+        # 一条post 数据插入数据库
+        album_title = form.album_title.data
+        album_desc = form.album_desc.data
+        album_privacy = form.album_privacy.data
+        album_tag = form.album_tag.data
+
+        album = Album(title=album_title,desc=album_desc,privacy=album_privacy,tag_id=album_tag,uuid=str(uuid.uuid4().hex)[:6],
+                      user_id=int(session.get('user_id')))
+
+        db.session.add(album)
+        db.session.commit()
+
         return redirect(url_for('album_upload'))
 
-    resp = make_response(render_template('album_create.html'))
-    return resp
+    return render_template('album_create.html',form = form)
 
 @app.route('/album/browse')
 def album_browse():
@@ -277,6 +290,7 @@ def album_list():
 
 
 @app.route('/album/upload')
+@user_login_req
 def album_upload():
 
     resp = make_response(render_template('album_upload.html'))

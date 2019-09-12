@@ -93,10 +93,25 @@ class Photo(db.Model):
 
 
 if __name__ == '__main__':
-    db.drop_all()
-    db.create_all()
+    flag = 1
+    if flag == 0:
+        db.drop_all()
+        db.create_all()
+    if flag == 1:
 
+        tag0 = AlbumTag(name='AJ1')
+        tag1 = AlbumTag(name='AJ4')
+        tag2 = AlbumTag(name='AJ6')
+        tag3 = AlbumTag(name='AJ13')
+        tag4 = AlbumTag(name='AJ11')
 
+        db.session.add(tag0)
+        db.session.add(tag1)
+        db.session.add(tag2)
+        db.session.add(tag3)
+        db.session.add(tag4)
+
+        db.session.commit()
 
 
 
