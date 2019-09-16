@@ -260,11 +260,27 @@ def album_create():
     if form.validate_on_submit():
         # 一条post 数据插入数据库
         album_title = form.album_title.data
+
+        # 相册同名，返回处理
+        # exist_count = Album.query.filter_by(title=album_title).count()
+        # if exist_count > 0:
+        #     flash(message='相册标题已经存在，请重新输入标题！',category='err')
+        #     return render_template('album_create.html',form = form)
+
         album_desc = form.album_desc.data
         album_privacy = form.album_privacy.data
         album_tag = form.album_tag.data
 
-        album = Album(title=album_title,desc=album_desc,privacy=album_privacy,tag_id=album_tag,uuid=str(uuid.uuid4().hex)[:6],
+        # 确保uuid的唯一性
+        existed = True
+        album_uuid = str(uuid.uuid4().hex)[:6]
+        while existed:
+            if Album.query.filter_by(uuid = album_uuid).count() > 0:
+                album_uuid = str(uuid.uuid4().hex)[:6]
+            else:
+                existed = False
+
+        album = Album(title=album_title,desc=album_desc,privacy=album_privacy,tag_id=album_tag,uuid=album_uuid,
                       user_id=int(session.get('user_id')))
 
         db.session.add(album)
