@@ -195,7 +195,7 @@ def user_del():
         # 删除用户的头像文件
         delpath = os.path.join(app.config['UPLOADS_DIR'],session.get('user_name'))
         shutil.rmtree(delpath,ignore_errors=True)
-
+        # 根据用户名查询用户
         # user = User.query.filter_by(name = session.get('user_name')).first()
         # 根据id查询用户
         user = User.query.get_or_404(int(session.get('user_id')))
@@ -267,6 +267,12 @@ def album_create():
         #     flash(message='相册标题已经存在，请重新输入标题！',category='err')
         #     return render_template('album_create.html',form = form)
 
+        # 同一个用户相册同名，返回处理
+        exist_count = Album.query.filter(Album.title == album_title,Album.user_id == session.get('user_id')).count()
+        if exist_count > 0:
+            flash(message='相册标题已经存在，请重新输入标题！',category='err')
+            return render_template('album_create.html',form = form)
+
         album_desc = form.album_desc.data
         album_privacy = form.album_privacy.data
         album_tag = form.album_tag.data
@@ -310,13 +316,48 @@ def album_list():
 def album_upload():
 
     form = AlbumUploadForm()
+
     # 动态给form 表单的内容添加属性并查询当前用户的相册信息
-    if request.method == 'GET':
-        albums = Album.query.filter_by(user_id=session.get('user_id')).all()
-        form.album_title.choices = [(album.id, album.title) for album in albums]
+    albums = Album.query.filter_by(user_id=session.get('user_id')).all()
+    form.album_title.choices = [(album.id, album.title) for album in albums]
 
     if form.validate_on_submit():
-        pass
+
+        # 如果上传多个文件，也只会返回一个 filestorage 对象
+        files1 = request.files['album_upload']
+        # 如果上传多个文件，会返回一个 filestorage 对象列表
+        filesmul = request.files.getlist('album_upload')
+
+        albumstitle = ''
+        # 遍历下拉框标签，找到用户选中的对应的相册title
+        for id,title in form.album_title.choices:
+            if id == form.album_title.data:
+                albumstitle = title
+
+        #将上传的相册文件保存在本地
+        folder = session.get('user_name')+'/'+albumstitle
+        files_url = []
+        # 开始遍历每一个合格的照片文件，并保存在当前用户目录
+        for file in filesmul:
+            # 重命名
+            name = secure_filename_with_uuid(file.filename)
+
+            # 保存文件
+            fname = photoSet.save(file, folder=folder, name=name)
+
+            # 生成url
+            furl = photoSet.url(fname)
+            files_url.append(furl)
+
+        # #将上传的相册文件填入数据库
+        albumu = Album.query.filter_by(id=form.album_title.data).first()
+        albumu.photonum  = int(albumu.photonum) + len(filesmul)
+
+        db.session.add(albumu)
+        db.session.commit()
+        message = u'成功保存'+str(len(filesmul))+'张图片,当前相册共拥有' + str(albumu.photonum) + '张图片'
+        flash(message=message, category='ok')
+        return render_template('album_upload.html', form=form, files_url=files_url)
     return render_template('album_upload.html',form = form)
 
 
