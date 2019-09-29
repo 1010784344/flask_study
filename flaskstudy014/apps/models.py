@@ -59,7 +59,8 @@ class Album(db.Model):
     uuid = db.Column(db.String(120), nullable=False)
     addtime = db.Column(db.DATETIME, default=datetime.now)
     tag_id = db.Column(db.Integer, db.ForeignKey('album_tag.id'),nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
+    # 在相册这个类里面 user_id 可以为空，否则在注销的时候会报错
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     album_favor = db.relationship('AlbumFavor',backref = 'album',lazy=True)
     photo = db.relationship('Photo',backref = 'album',lazy=True)
 
@@ -73,7 +74,7 @@ class AlbumFavor(db.Model):
     __tablename__ = 'album_favor'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     album_id = db.Column(db.Integer, db.ForeignKey('album.id'), nullable=False)
     addtime = db.Column(db.DATETIME, default=datetime.now)
 

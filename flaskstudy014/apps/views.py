@@ -10,10 +10,10 @@ from flask import redirect,url_for,flash,session,make_response
 from flask import render_template,request
 
 from apps import app
-from apps.models import User,AlbumTag,Album
+from apps.models import User,Album,Photo
 from apps.forms import RegistForm,LoginForm,PwdForm,InfoForm,AlbumInfoForm,AlbumUploadForm
 from apps import db
-from apps.utils import secure_filename_with_uuid
+from apps.utils import secure_filename_with_uuid,create_thumbnail,create_show
 
 from flask_uploads import configure_uploads, UploadNotAllowed,UploadSet,IMAGES
 # 加密
@@ -57,6 +57,28 @@ def user_regist():
     form = RegistForm()
     if form.validate_on_submit():
 
+        # 如果用户已经存在了，就不执行插入操作
+        user_qusery = User.query.filter_by(name=form.data['user_name']).first()
+        if user_qusery:
+            # 消息闪现（给下一个视图传递消息）
+            flash(u'用户已存在', category='err')
+            return render_template('user_regist.html', form=form)
+
+        # 如果邮箱已经存在了，就不执行插入操作
+        user_qusery = User.query.filter_by(email=form.data['user_email']).first()
+        if user_qusery:
+            # 消息闪现（给下一个视图传递消息）
+            flash(u'邮箱已存在', category='err')
+            return render_template('user_regist.html', form=form)
+
+        # 如果手机号已经存在了，就不执行插入操作
+        user_qusery = User.query.filter_by(phone=form.data['user_phone']).first()
+        if user_qusery:
+            # 消息闪现（给下一个视图传递消息）
+            flash(u'手机号已存在', category='err')
+            return render_template('user_regist.html', form=form)
+
+
         user = User()
         # 以 wt-form 方式表单数据
         user.name = form.data['user_name']
@@ -70,11 +92,7 @@ def user_regist():
         filestorage = request.files['user_face']
         user.face = secure_filename_with_uuid(filestorage.filename)
 
-        # 如果用户已经存在了，就不执行插入操作
-        if User.query.filter_by(name = user.name).first():
-            # 消息闪现（给下一个视图传递消息）
-            flash(u'用户已存在',category='err')
-            return render_template('user_regist.html',form=form)
+
 
 
         try:
@@ -321,6 +339,11 @@ def album_upload():
     albums = Album.query.filter_by(user_id=session.get('user_id')).all()
     form.album_title.choices = [(album.id, album.title) for album in albums]
 
+    #如果没有相册，就进不去更新相册里面
+    if not form.album_title.choices:
+        flash(message='请先创建一个相册，再上传照片！', category='err')
+        return redirect(url_for('album_create'))
+
     if form.validate_on_submit():
 
         # 如果上传多个文件，也只会返回一个 filestorage 对象
@@ -335,19 +358,34 @@ def album_upload():
                 albumstitle = title
 
         #将上传的相册文件保存在本地
+
+        # 构造 flask-uploads 配置之下的中间路径
         folder = session.get('user_name')+'/'+albumstitle
+
         files_url = []
         # 开始遍历每一个合格的照片文件，并保存在当前用户目录
         for file in filesmul:
             # 重命名
-            name = secure_filename_with_uuid(file.filename)
+            fname = secure_filename_with_uuid(file.filename)
 
             # 保存文件
-            fname = photoSet.save(file, folder=folder, name=name)
+            photoSet.save(file, folder=folder, name=fname)
 
-            # 生成url
-            furl = photoSet.url(fname)
+            # 生成缩略图
+            fname_thumb = create_thumbnail(path=photoSet.config.destination + os.sep + folder, filename=fname)
+
+            # 生成展示图
+            fname_show = create_show(path=photoSet.config.destination + os.sep + folder, filename=fname)
+
+
+            # 缩率图生成url（这一行代码的意义是利用 photoSet.url 将任意一个本地文件生成 url）
+            furl = photoSet.url(folder + '/' + fname_thumb)
             files_url.append(furl)
+
+            #保存到数据库
+            photo = Photo(fname=fname,fname_s=fname_show,fname_t=fname_thumb,album_id=form.album_title.data)
+            db.session.add(photo)
+            db.session.commit()
 
         # #将上传的相册文件填入数据库
         albumu = Album.query.filter_by(id=form.album_title.data).first()

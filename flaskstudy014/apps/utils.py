@@ -3,6 +3,8 @@
 import os
 from datetime import datetime
 import uuid
+import PIL
+from PIL import Image
 
 from werkzeug.utils import secure_filename
 
@@ -45,11 +47,46 @@ def check_files_extension(filenamelist,allowed_extensions):
         else:
             return False
 
+# 创建缩略图
+def create_thumbnail(path,filename,basewidth=300):
+
+    imagname,ext = os.path.splitext(filename)
+    newfilename = imagname + '_thumb_' + ext
+
+    img = Image.open(os.path.join(path,filename))
+
+    if img.size[0] > basewidth:
+
+        # 获取百分比
+        w_percent = basewidth / float(img.size[0])
+        # 依据百分比修改高度
+        h_size = int(float(img.size[1])*w_percent)
+
+        img = img.resize((basewidth,h_size),PIL.Image.ANTIALIAS)
+
+    img.save(os.path.join(path, newfilename))
+    return newfilename
 
 
+# 创建展示图
+def create_show(path,filename,basewidth=800):
 
+    imagname,ext = os.path.splitext(filename)
+    newfilename = imagname + '_show_' + ext
 
+    img = Image.open(os.path.join(path,filename))
 
+    if img.size[0] < basewidth:
+
+        # 获取百分比
+        w_percent = basewidth / float(img.size[0])
+        # 依据百分比修改高度
+        h_size = int(float(img.size[1])*w_percent)
+
+        img = img.resize((basewidth,h_size),PIL.Image.ANTIALIAS)
+
+    img.save(os.path.join(path, newfilename))
+    return newfilename
 
 
 
