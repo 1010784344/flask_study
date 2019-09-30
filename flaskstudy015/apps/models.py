@@ -99,7 +99,7 @@ if __name__ == '__main__':
         db.drop_all()
         db.create_all()
     if flag == 1:
-
+        # 因为页面没有创建相册标签的这个入口，所以暂时放在了这里
         tag0 = AlbumTag(name='AJ1')
         tag1 = AlbumTag(name='AJ4')
         tag2 = AlbumTag(name='AJ6')

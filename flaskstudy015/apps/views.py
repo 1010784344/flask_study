@@ -10,7 +10,7 @@ from flask import redirect,url_for,flash,session,make_response
 from flask import render_template,request
 
 from apps import app
-from apps.models import User,Album,Photo
+from apps.models import User, Album, Photo, AlbumTag
 from apps.forms import RegistForm,LoginForm,PwdForm,InfoForm,AlbumInfoForm,AlbumUploadForm
 from apps import db
 from apps.utils import secure_filename_with_uuid,create_thumbnail,create_show
@@ -317,16 +317,14 @@ def album_create():
 @app.route('/album/browse')
 def album_browse():
 
-    resp = make_response(render_template('album_browse.html'))
+    return render_template('album_browse.html')
 
-    return resp
 
 @app.route('/album/list')
 def album_list():
-
-    resp = make_response(render_template('album_list.html'))
-
-    return resp
+    albumtags = AlbumTag.query.all()
+    albums = Album.query.all()
+    return render_template('album_list.html',albumtags = albumtags,albums = albums)
 
 
 @app.route('/album/upload',methods=['GET','POST'])
