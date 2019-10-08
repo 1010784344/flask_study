@@ -24,6 +24,7 @@
                         </span>
 
                         <span style="font-size: small;font-weight: 600;color: #0c0c0c">
+                            {# 外键使用实例：album（多） 里面去找 user（一） 的相关信息#}
                             {{ item.user.name }}
                         </span>
                     </div>
@@ -31,11 +32,11 @@
                     <div class="card-body">
                         <div class="card-image">
                             <a href="album_browse.html" target="_blank"></a>
-                                <img src="{{ url_for('static',filename='uploads/143.png') }}" width="250px" height="150px">
+                                <img src="{{ album_cover_url[loop.index0]}}" width="250px" height="150px">
                         </div>
 
                         <div class="card-status" style="font-size: large; font-weight: 500;color: #2c4762">
-                            <span>浏览量（{{ item.clicknum }}k）</span> <span>收藏量（{{ item.favornum }}k）</span>
+                            <span>浏览量（{{ item.clicknum }}）</span> <span>收藏量（{{ item.favornum }}）</span>
 
                         </div>
                     </div>

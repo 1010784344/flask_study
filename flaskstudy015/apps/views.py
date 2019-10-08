@@ -324,7 +324,18 @@ def album_browse():
 def album_list():
     albumtags = AlbumTag.query.all()
     albums = Album.query.all()
-    return render_template('album_list.html',albumtags = albumtags,albums = albums)
+    # 外键使用实例：album（一） 里面去找 照片（多） 的相关信息
+    album_cover_url = []
+    for album in albums:
+        # 基于外键的使用，当拿捏不准，不知道怎么使用的话，可以进行打印，查看效果
+        # print(album.photo)
+        cover = album.photo[0].fname_t
+        folder = album.user.name + '/' + album.title
+        coverimgurl = photoSet.url(filename=folder + '/' + cover)
+        album_cover_url.append(coverimgurl)
+
+    print(album_cover_url)
+    return render_template('album_list.html',albumtags = albumtags,albums = albums,album_cover_url=album_cover_url)
 
 
 @app.route('/album/upload',methods=['GET','POST'])

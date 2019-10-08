@@ -100,17 +100,23 @@ if __name__ == '__main__':
         db.create_all()
     if flag == 1:
         # 因为页面没有创建相册标签的这个入口，所以暂时放在了这里
-        tag0 = AlbumTag(name='AJ1')
-        tag1 = AlbumTag(name='AJ4')
-        tag2 = AlbumTag(name='AJ6')
-        tag3 = AlbumTag(name='AJ13')
-        tag4 = AlbumTag(name='AJ11')
+        tag0 = AlbumTag(name='大黄靴')
+        tag1 = AlbumTag(name='空军一号')
+        tag2 = AlbumTag(name='黑脚趾')
+        tag3 = AlbumTag(name='马丁博士')
+        tag4 = AlbumTag(name='开口笑')
+        tag5 = AlbumTag(name='one star')
+        tag6 = AlbumTag(name='All star 1970s')
+        tag7 = AlbumTag(name='贪玩蓝月')
 
         db.session.add(tag0)
         db.session.add(tag1)
         db.session.add(tag2)
         db.session.add(tag3)
         db.session.add(tag4)
+        db.session.add(tag5)
+        db.session.add(tag6)
+        db.session.add(tag7)
 
         db.session.commit()
 
