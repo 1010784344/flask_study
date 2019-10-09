@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,request
 from flask import render_template
 
 # 创建了一个flask 类的实例
@@ -19,6 +19,14 @@ def show_user_profile(username):
 @app.route('/post/<int:post_id>')
 def show_post(post_id):
     return 'Post %d' % post_id
+
+
+# 查询参数
+@app.route('/check/')
+def show_check():
+    # 对应的url里必须要有 127.0.0.1:5000/check/?id=XXX
+    checkvalue = request.args.get('id')
+    return 'check %s' % checkvalue
 
 
 # 一个视图函数对应多个url

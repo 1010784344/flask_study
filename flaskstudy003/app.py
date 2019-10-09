@@ -15,7 +15,7 @@ def index():
 def user_regist():
 
     if request.method == 'POST':
-        # 获取查询参数
+
         print(request.form)
 
         user = User()

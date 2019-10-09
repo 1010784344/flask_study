@@ -3,6 +3,7 @@
 import os
 import uuid
 import shutil
+from random import randint
 # 协助定义装饰器
 from functools import wraps
 
@@ -323,19 +324,28 @@ def album_browse():
 @app.route('/album/list')
 def album_list():
     albumtags = AlbumTag.query.all()
-    albums = Album.query.all()
+    # 如果没有tag对应的键值，就赋值为 all
+    tagid = request.args.get('tag','all')
+
+    #按时间降序排序
+    if tagid == 'all':
+        albums = Album.query.filter(Album.privacy == 'private').order_by(Album.addtime.desc()).all()
+    else:
+        albums = Album.query.filter(Album.privacy =='private',Album.tag_id == int(tagid)).order_by(Album.addtime.desc()).all()
+
+
+    # albums = Album.query.filter_by(privacy='private').all()
+
     # 外键使用实例：album（一） 里面去找 照片（多） 的相关信息
-    album_cover_url = []
     for album in albums:
         # 基于外键的使用，当拿捏不准，不知道怎么使用的话，可以进行打印，查看效果
         # print(album.photo)
-        cover = album.photo[0].fname_t
+        cover = album.photo[randint(0,len(album.photo)-1)].fname_t
         folder = album.user.name + '/' + album.title
         coverimgurl = photoSet.url(filename=folder + '/' + cover)
-        album_cover_url.append(coverimgurl)
+        album.coverimgurl = coverimgurl
 
-    print(album_cover_url)
-    return render_template('album_list.html',albumtags = albumtags,albums = albums,album_cover_url=album_cover_url)
+    return render_template('album_list.html',albumtags = albumtags,albums = albums)
 
 
 @app.route('/album/upload',methods=['GET','POST'])

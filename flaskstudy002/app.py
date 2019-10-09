@@ -11,9 +11,11 @@ def amaze(name = None):
     users = ['123','456','789','798']
     return render_template('index.html',name = name,users = users)
 
-# 传递查询参数
+
 @app.route('/about/')
-def about(name=None,users = None):
+# 此处可以传递你想要传递的参数，但只是跟普通函数一样
+def about(name = 'Jack'):
+
     # 传递一个列表
     users = ['123', '456', '789', '798']
     print('request: ' ,request)
@@ -28,8 +30,6 @@ def about(name=None,users = None):
     print('request.method: ', request.method)
     # 获取url 对应的视图函数
     print('request.endpoint: ', request.endpoint)
-
-
 
     return render_template('index.html',name = name,users = users)
 
