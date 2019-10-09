@@ -1,12 +1,14 @@
 {% extends 'layout.html' %}
 
+
+
 {% block content %}
     
     <div class="page-header">
-        <a style="display: inline-block;font-size: x-large;margin: 5px 5px;" href="{{ url_for('album_list') }}">所有分类</a>
+        <a style="display: inline-block;font-size: x-large;margin: 5px 5px;" href="{{ url_for('album_list',page=1) }}">所有分类</a>
         {% for item in albumtags %}
 
-            <a style="display: inline-block;font-size: large;margin: 5px 5px;" href="{{ url_for('album_list',tag=item.id) }}">{{ item.name }}</a>
+            <a style="display: inline-block;font-size: large;margin: 5px 5px;" href="{{ url_for('album_list',page=1,tag=item.id) }}">{{ item.name }}</a>
 
         {% endfor %}
     </div>
@@ -14,7 +16,7 @@
 
     <div class="container">
 
-        {% for item in albums %}
+        {% for item in albums.items %}
             <div class="col-md-3">
             <div class="media-card">
                 <div class="panel panel-body" style="display:block; padding: 3px">
@@ -50,6 +52,34 @@
         </div>
         {% endfor %}
 
+        {#    分页代码#}
+        <div class="col-md-12 text-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li>
+                        <a href="{{ url_for('album_list',page=1) }}" aria-label="First">
+                            <span aria-hidden="true">首页</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                    <li><a href="#">1&nbsp;/&nbsp;10</a></li>
+                    <li>
+                        <a href="#" aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('album_list',page=2) }}" aria-label="Last">
+                            <span aria-hidden="true">尾页</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
 
 
 
