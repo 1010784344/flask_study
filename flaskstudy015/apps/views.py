@@ -327,12 +327,14 @@ def album_list(page=None):
     # 如果没有tag对应的键值，就赋值为 all
     tagid = request.args.get('tag','all')
 
-    #按时间降序排序（并且分页完成的数据）
+    #按相册标签，公开类型，时间降序排序（并对获取的数据完成分页）
     if tagid == 'all':
         albums = Album.query.filter(Album.privacy == 'private').order_by(Album.addtime.desc()).paginate(page=page,per_page=2)
     else:
         albums = Album.query.filter(Album.privacy =='private',Album.tag_id == int(tagid)).order_by(Album.addtime.desc()).paginate(page=page,per_page=2)
 
+    # albums 是 pagination 对象（不可迭代）
+    # albums.items 里面只有当前分页得到的这些数据
 
     print(albums.items)
 
