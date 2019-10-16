@@ -1,0 +1,238 @@
+{% extends 'layout.html' %}
+
+
+{% block css_style %}
+    <link href="{{ url_for("static",filename = "custom/custom.css")}}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+    
+    <div class="container">
+        {#当前相册展示#}
+        <div class="col-md-8">
+            <h2 class="news-title">
+                十年饮冰，难凉热血
+            </h2>
+
+            <div class="new-status">
+                <span>
+                    <span class="avatar">
+                        <img src="#">
+                    </span>作者（无量寿佛）
+                </span>
+                <span>浏览量(25K)</span>
+                <span>收藏量(12K)</span>
+                <span>发布时间(2019-11-11)</span>
+                <div class="label label-default">
+                    <span class="glyphicon glyphicon-heart"></span>收藏
+                </div>
+            </div>
+
+            <div class="news-content">
+                <blockquote>
+                    <p>本来无一物，何处惹尘埃</p>
+                </blockquote>
+
+                <div>
+                    {% for item in range(1,5) %}
+                        <img src="{{ url_for('static',filename='uploads/tu1/大魔王/90fc146d.jpg') }}" class="img-responsive"  >
+                    {% endfor %}
+
+                </div>
+
+                <div>
+                    <a href="#" class="text-lg">回到顶部</a>
+                </div>
+            </div>
+        </div>
+
+        {#相册推荐#}
+        <div class="col-md-4">
+            <div class="side-bar-card">
+                <div class="card-title">相关推荐</div>
+
+                <div class="card-body">
+
+                    <div class="list">
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse') }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse') }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse') }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse') }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse') }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse') }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse') }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse') }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+             <div class="side-bar-card">
+                <div class="card-title">我的收藏</div>
+
+                <div class="card-body">
+
+                    <div class="list">
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse') }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse') }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse') }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse') }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse') }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse') }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse') }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse') }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+{% endblock %}
+
+{% block js_code %}
+<script>
+    $(document).ready(
+        function () {
+
+             $('#nav-6').addClass('active')
+
+        }
+    )
+</script>
+{% endblock %}
+
+
+
