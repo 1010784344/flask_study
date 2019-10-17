@@ -33,7 +33,7 @@
 
                     <div class="card-body">
                         <div class="card-image">
-                            <a href="{{ url_for('album_browse') }}" >
+                            <a href="{{ url_for('album_browse',id = item.id) }}" >
                                 <img src="{{ item.coverimgurl}}" width="250px" height="150px">
                             </a>
                         </div>

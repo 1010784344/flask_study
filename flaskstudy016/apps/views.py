@@ -315,23 +315,59 @@ def album_create():
 
     return render_template('album_create.html',form = form)
 
-@app.route('/album/browse')
-def album_browse():
+@app.route('/album/browse/<int:id>')
+def album_browse(id=None):
+    # id 是相册的id
+    album = Album.query.filter_by(id=id).first()
 
-    return render_template('album_browse.html')
+    # 更新相册点击量
+    album.clicknum += 1
+    db.session.add(album)
+    db.session.commit()
+
+    #取出推荐列表的相册信息（同标签,但并不展示当前相册）
+    recommendalbums = Album.query.filter(Album.tag_id == album.tag_id, Album.id != id).all()
+
+    # 取出推荐列表相册展示图片的url
+    for recom in recommendalbums:
+        cover = recom.photo[randint(0,len(recom.photo)-1)].fname_t
+        folder = recom.user.name + '/' + recom.title
+        # 动态的给 album 对象添加一个 coverimgurl 属性
+        coverimgurl = photoSet.url(filename=folder + '/' + cover)
+        recom.coverimgurl = coverimgurl
+
+
+    #取出作者头像的url
+    folder = album.user.name
+    userface_url = photoSet.url(filename=folder + '/' + album.user.face)
+
+    # 取出该相册下面所有图片
+    # photos = Photo.query.filter_by(album_id=id).all()
+    photos = album.photo
+
+    photofolder = album.user.name + '/' + album.title
+
+    for photo in photos:
+        imgurl = photoSet.url(filename=photofolder + '/' + photo.fname)
+        photo.imgurl = imgurl
+
+
+    return render_template('album_browse.html', album=album, userface_url=userface_url,recommendalbums=recommendalbums)
 
 
 @app.route('/album/list/<int:page>')
 def album_list(page=None):
+
     albumtags = AlbumTag.query.all()
+
     # 如果没有tag对应的键值，就赋值为 all
     tagid = request.args.get('tag','all')
 
     #按相册标签，公开类型，时间降序排序（并对获取的数据完成分页）
     if tagid == 'all':
-        albums = Album.query.filter(Album.privacy == 'private').order_by(Album.addtime.desc()).paginate(page=page,per_page=2)
+        albums = Album.query.filter(Album.privacy == 'private').order_by(Album.addtime.desc()).paginate(page=page,per_page=4)
     else:
-        albums = Album.query.filter(Album.privacy =='private',Album.tag_id == int(tagid)).order_by(Album.addtime.desc()).paginate(page=page,per_page=2)
+        albums = Album.query.filter(Album.privacy =='private',Album.tag_id == int(tagid)).order_by(Album.addtime.desc()).paginate(page=page,per_page=4)
 
     # albums 是 pagination 对象（不可迭代）
     # albums.items 里面只有当前分页得到的这些数据
@@ -341,9 +377,11 @@ def album_list(page=None):
     # 外键使用实例：album（一） 里面去找 照片（多） 的相关信息
     for album in albums.items:
         # 基于外键的使用，当拿捏不准，不知道怎么使用的话，可以进行打印，查看效果
-        # print(album.photo)
+        # print(album.photo),可以拿出该相册下面的所有photo
         cover = album.photo[randint(0,len(album.photo)-1)].fname_t
         folder = album.user.name + '/' + album.title
+
+        # 动态的给 album 对象添加一个 coverimgurl 属性
         coverimgurl = photoSet.url(filename=folder + '/' + cover)
         album.coverimgurl = coverimgurl
 
