@@ -1,0 +1,205 @@
+{% extends 'layout.html' %}
+
+
+{% block css_style %}
+    <link href="{{ url_for("static",filename = "custom/custom.css")}}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+    
+    <div class="container">
+        {#当前相册展示#}
+        <div class="col-md-8">
+            <h2 class="news-title">
+                {{ album.title }}
+            </h2>
+
+            <div class="new-status">
+                <span>
+                    <span class="avatar">
+                        <img src="{{ userface_url }}">
+                    </span>作者（{{ album.user.name }}）
+                </span>
+                <span>浏览量({{ album.clicknum }})</span>
+                <span>收藏量({{ album.favornum }})</span>
+                <span>发布时间({{ album.addtime }})</span>
+                <div id="btn-server" class="btn btn-default">
+                    收藏
+                </div>
+            </div>
+
+            <div class="news-content">
+                <blockquote>
+                    <p>{{ album.desc }}</p>
+                </blockquote>
+
+                <div>
+                    {% for item in album.photo %}
+                        <img src="{{ item.imgurl }}" class="img-responsive"  >
+                    {% endfor %}
+
+                </div>
+
+                <div>
+                    <a href="#" class="text-lg">回到顶部</a>
+                </div>
+            </div>
+        </div>
+
+        {#相册推荐#}
+        <div class="col-md-4">
+            <div class="side-bar-card">
+                <div class="card-title">相关推荐</div>
+
+                <div class="card-body">
+
+                    <div class="list">
+                        {% for foo in recommendalbums %}
+                            <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse',id=foo.id) }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{foo.coverimgurl }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse',id=foo.id) }}">
+                                    <div class="title">{{ foo.title }}</div>
+                                    <div class="desc">{{ foo.clicknum }}浏览·{{ foo.favornum }}收藏</div>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+            </div>
+
+             <div class="side-bar-card">
+                <div class="card-title">我的收藏</div>
+
+                <div class="card-body">
+
+                    {% if session['user_name'] %}
+                        <div class="list">
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse',id=1) }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse',id=1) }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse',id=1) }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse',id=1) }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse',id=1) }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse',id=1) }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                        <div class="item clearfix">
+
+                            <div class="col-xs-5 no-padding-h">
+                            {#上面的url是为了获取视图函数的url#}
+                            <a href="{{ url_for('album_browse',id=1) }}">
+                                {#下面的url是为了获取静态资源的url#}
+                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
+                            </div>
+
+                            <div class="col-xs-7 no-padding-h">
+                                <a href="{{ url_for('album_browse',id=1) }}">
+                                    <div class="title">长安十二时辰</div>
+                                    <dic class="desc">15k阅读·1k收藏</dic>
+                                </a>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+{% endblock %}
+
+{% block js_code %}
+<script>
+    $(document).ready(
+        function () {
+
+             $('#nav-6').addClass('active')
+
+        }
+    )
+    {#检查（dom 树）有没有构建好#}
+    $(document).ready(
+        function () {
+             {#选择收藏按钮#}
+             $('#btn-server').click(
+
+                 {#特别注意这是个回调函数#}
+                 function () {
+                     alert('GoodJob')
+                 }
+                 
+             )
+
+        }
+    )
+
+</script>
+{% endblock %}
+
+
+
