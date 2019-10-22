@@ -82,88 +82,42 @@
             </div>
 
              <div class="side-bar-card">
+             {% if session['user_name'] %}
                 <div class="card-title">我的收藏</div>
 
                 <div class="card-body">
+                    {#如果用户登录才显示用户的收藏列表#}
 
-                    {% if session['user_name'] %}
                         <div class="list">
-                        <div class="item clearfix">
+                            {% for tmp in favordalbums %}
+                            <div class="item clearfix">
 
-                            <div class="col-xs-5 no-padding-h">
-                            {#上面的url是为了获取视图函数的url#}
-                            <a href="{{ url_for('album_browse',id=1) }}">
-                                {#下面的url是为了获取静态资源的url#}
-                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
-                            </div>
+                                <div class="col-xs-5 no-padding-h">
+                                {#上面的url是为了获取视图函数的url#}
+                                <a href="{{ url_for('album_browse',id=tmp.id) }}">
+                                    {#下面的url是为了获取静态资源的url#}
+                                    <img src="{{ tmp.favorimgurl }}"></a>
+                                </div>
 
-                            <div class="col-xs-7 no-padding-h">
-                                <a href="{{ url_for('album_browse',id=1) }}">
-                                    <div class="title">长安十二时辰</div>
-                                    <dic class="desc">15k阅读·1k收藏</dic>
-                                </a>
+                                <div class="col-xs-7 no-padding-h">
+                                    <a href="{{ url_for('album_browse',id=tmp.id) }}">
+                                        <div class="title">{{ tmp.title }}</div>
+                                        <div class="desc">{{ tmp.clicknum }}浏览·{{ tmp.favornum }}收藏</div>
+                                    </a>
 
-                            </div>
-
-                        </div>
-                        <div class="item clearfix">
-
-                            <div class="col-xs-5 no-padding-h">
-                            {#上面的url是为了获取视图函数的url#}
-                            <a href="{{ url_for('album_browse',id=1) }}">
-                                {#下面的url是为了获取静态资源的url#}
-                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
-                            </div>
-
-                            <div class="col-xs-7 no-padding-h">
-                                <a href="{{ url_for('album_browse',id=1) }}">
-                                    <div class="title">长安十二时辰</div>
-                                    <dic class="desc">15k阅读·1k收藏</dic>
-                                </a>
+                                </div>
 
                             </div>
+                            {% endfor %}
 
-                        </div>
-                        <div class="item clearfix">
-
-                            <div class="col-xs-5 no-padding-h">
-                            {#上面的url是为了获取视图函数的url#}
-                            <a href="{{ url_for('album_browse',id=1) }}">
-                                {#下面的url是为了获取静态资源的url#}
-                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
-                            </div>
-
-                            <div class="col-xs-7 no-padding-h">
-                                <a href="{{ url_for('album_browse',id=1) }}">
-                                    <div class="title">长安十二时辰</div>
-                                    <dic class="desc">15k阅读·1k收藏</dic>
-                                </a>
-
-                            </div>
-
-                        </div>
-                        <div class="item clearfix">
-
-                            <div class="col-xs-5 no-padding-h">
-                            {#上面的url是为了获取视图函数的url#}
-                            <a href="{{ url_for('album_browse',id=1) }}">
-                                {#下面的url是为了获取静态资源的url#}
-                                <img src="{{ url_for('static',filename ='uploads/tu1/天机星/52e293d0_thumb_.jpg') }}"></a>
-                            </div>
-
-                            <div class="col-xs-7 no-padding-h">
-                                <a href="{{ url_for('album_browse',id=1) }}">
-                                    <div class="title">长安十二时辰</div>
-                                    <dic class="desc">15k阅读·1k收藏</dic>
-                                </a>
-
-                            </div>
-
-                        </div>
                     </div>
-                    {% endif %}
+
+
 
                 </div>
+             {% else %}
+                 <div class="card-title">公告栏</div>
+             {% endif %}
             </div>
         </div>
 
@@ -188,16 +142,81 @@
              {#选择收藏按钮#}
              $('#btn-server').click(
 
-                 {#特别注意这是个回调函数#}
                  function () {
-                     alert('GoodJob')
+
+                     var aid = {{ album.id }};
+                     {#当前登录用户#}
+                     var uid = {{ session.get('user_id',-1) }};
+                     var act = 'add';
+                     {#相册主人#}
+                     var albumauthor = {{ album.user_id }}
+
+                     if (uid == -1)
+                         alert('请登录之后再收藏！');
+                     else if (uid == albumauthor)
+                         alert('请不要收藏自己的相册！');
+                     else
+                     {
+                         if ($('#btn-server').text() == '已经收藏！') {
+
+                             act = 'del';
+                                 $.ajax({
+                                 url:"{{ url_for('album_favor') }}",
+                                 type:'GET',
+                                 data:'aid='+aid + '&uid='+uid+ '&act='+act,
+                                 {#接收数据格式为json#}
+                                 dataType:'json',
+                                 {#回调函数接收 url 的响应#}
+                                 success:function (res) {
+
+                                     if (res.ok == 1)
+                                         $('#btn-server').text('收藏成功！');
+                                     if (res.ok == 0)
+                                        $('#btn-server').text('已经收藏！');
+                                     if (res.ok == 2)
+                                         alert('收藏已取消')
+                                        $('#btn-server').text('收藏');
+
+                                 }
+
+
+                             })
+
+                         }
+
+                             {#$('#btn-server').text('收藏');#}
+                         else
+                             $.ajax({
+                             url:"{{ url_for('album_favor') }}",
+                             type:'GET',
+                             data:'aid='+aid + '&uid='+uid+ '&act='+act,
+                             {#接收数据格式为json#}
+                             dataType:'json',
+                             {#回调函数接收 url 的响应#}
+                             success:function (res) {
+
+                                 if (res.ok == 1)
+                                     $('#btn-server').text('收藏成功！');
+                                 if (res.ok == 0)
+                                    $('#btn-server').text('已经收藏！');
+                                 if (res.ok == 2)
+                                    $('#btn-server').text('收藏已取消！');
+                             }
+
+
+                         })
+                     }
+
+
+
+
+
                  }
-                 
+
              )
 
         }
     )
-
 </script>
 {% endblock %}
 

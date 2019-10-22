@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # 视图函数存放,views 只负责带有路由装饰器的视图
 import os
+import json
 import uuid
 import shutil
 from random import randint
@@ -11,7 +12,7 @@ from flask import redirect,url_for,flash,session,make_response
 from flask import render_template,request
 
 from apps import app
-from apps.models import User, Album, Photo, AlbumTag
+from apps.models import User, Album, Photo, AlbumTag, AlbumFavor
 from apps.forms import RegistForm,LoginForm,PwdForm,InfoForm,AlbumInfoForm,AlbumUploadForm
 from apps import db
 from apps.utils import secure_filename_with_uuid,create_thumbnail,create_show
@@ -336,6 +337,23 @@ def album_browse(id=None):
         coverimgurl = photoSet.url(filename=folder + '/' + cover)
         recom.coverimgurl = coverimgurl
 
+    # 取出收藏列表的相册信息（当前用户的收藏的相册）
+    uid = session.get('user_id','')
+    favordalbums = []
+    if uid:
+
+        uidalbums = AlbumFavor.query.filter(AlbumFavor.user_id == uid).all()
+        for tmpfavor in uidalbums:
+            favordalbums.append(tmpfavor.album)
+
+        #取出收藏列表相册展示图片的url
+        for falbum in favordalbums:
+            cover = falbum.photo[randint(0, len(falbum.photo) - 1)].fname_t
+            folder = falbum.user.name + '/' + falbum.title
+            # 动态的给 album 对象添加一个 coverimgurl 属性
+            favorimgurl = photoSet.url(filename=folder + '/' + cover)
+            falbum.favorimgurl = favorimgurl
+
 
     #取出作者头像的url
     folder = album.user.name
@@ -352,7 +370,8 @@ def album_browse(id=None):
         photo.imgurl = imgurl
 
 
-    return render_template('album_browse.html', album=album, userface_url=userface_url,recommendalbums=recommendalbums)
+    return render_template('album_browse.html', album=album, userface_url=userface_url,
+                           recommendalbums=recommendalbums,favordalbums=favordalbums)
 
 
 @app.route('/album/list/<int:page>')
@@ -456,6 +475,58 @@ def album_upload():
         flash(message=message, category='ok')
         return render_template('album_upload.html', form=form, files_url=files_url)
     return render_template('album_upload.html',form = form)
+
+# 相册收藏ajax响应
+@app.route('/album/favor/',methods=['GET','POST'])
+@user_login_req
+def album_favor():
+    aid = request.args.get('aid')
+    uid = request.args.get('uid')
+    act = request.args.get('act')
+    # 检测数据库是否已经存在这样一条收藏记录
+    existed = AlbumFavor.query.filter_by(user_id = uid,album_id = aid).all()
+
+    album = Album.query.filter_by(id = aid).first()
+
+
+    # 0 已经收藏 1 收藏成功  2 取消收藏
+    if len(existed) >= 1:
+
+        if act == 'add':
+            favor_dict = {'ok': '0'}
+        elif act == 'del':
+            existed = AlbumFavor.query.filter_by(user_id=uid, album_id=aid).first()
+            db.session.delete(existed)
+            db.session.commit()
+            favor_dict = {'ok': '2'}
+
+            # 统计收藏量减一
+            album.favornum -= 1
+            db.session.add(album)
+            db.session.commit()
+    else:
+        # 添加收藏
+        favor = AlbumFavor(user_id = uid,album_id = aid)
+
+        db.session.add(favor)
+        db.session.commit()
+
+        favor_dict = {'ok':'1'}
+
+        # 统计收藏量加一
+        album.favornum += 1
+        db.session.add(album)
+        db.session.commit()
+
+
+    favor_str = json.dumps(favor_dict)
+    # json 响应
+    return favor_str
+
+
+
+
+
 
 
 # 定制错误页面
