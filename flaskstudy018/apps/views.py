@@ -271,6 +271,13 @@ def user_album_upload(page=None):
     return render_template('user_album_upload.html', albumtags=albumtags, albums=albums)
 
 
+# 删除个人相册
+@app.route('/user/album/upload/del/<int:id>',methods=['GET','POST'])
+@user_login_req
+def user_album_upload_del(id=None):
+
+    return redirect(url_for('user_album_upload',page=1))
+
 # 修改个人上传的相册
 @app.route('/user/album/upload/modify/<int:id>',methods=['GET','POST'])
 @user_login_req
@@ -295,20 +302,84 @@ def user_album_upload_modify(id=None):
     return render_template('user_album_upload_modify.html',form=form,album=album)
 
 
-# 修改相册里的图片
-@app.route('/user/album/upload/adddel/<int:id>',methods=['GET','POST'])
+# 相册里增删图片（及新增图片）
+@app.route('/user/album/upload/photo/add/<int:id>',methods=['GET','POST'])
 @user_login_req
-def user_album_upload_adddel(id=None):
+def user_album_upload_photo_add(id=None):
     album = Album.query.get_or_404(id)
-    photos = album.photo
+    if request.method == 'GET':
+        photos = album.photo
 
-    photofolder = album.user.name + '/' + album.title
+        photofolder = album.user.name + '/' + album.title
 
-    for photo in photos:
-        imgurl = photoSet.url(filename=photofolder + '/' + photo.fname_t)
-        photo.imgurl = imgurl
+        for photo in photos:
+            imgurl = photoSet.url(filename=photofolder + '/' + photo.fname_t)
+            photo.imgurl = imgurl
 
-    return render_template('user_album_upload_adddel.html',album=album)
+    if request.method == 'POST':
+
+        filesmul = request.files.getlist('album_upload')
+
+        # 这里中间可以再在这里添加一个自己写的后缀验证器，再进行遍历改名和统计。
+        # 这里我们默认文件后缀都是没有问题的
+
+        folder = session.get('user_name') + '/' + album.title
+
+        # 开始遍历每一个合格的照片文件，并保存在当前用户目录
+        for file in filesmul:
+            # 重命名
+            fname = secure_filename_with_uuid(file.filename)
+
+            # 保存文件
+            photoSet.save(file, folder=folder, name=fname)
+
+            # 生成缩略图
+            fname_thumb = create_thumbnail(path=photoSet.config.destination + os.sep + folder, filename=fname)
+
+            # 生成展示图
+            fname_show = create_show(path=photoSet.config.destination + os.sep + folder, filename=fname)
+
+            # 保存到数据库
+            photo = Photo(fname=fname, fname_s=fname_show, fname_t=fname_thumb, album_id=album.id)
+            db.session.add(photo)
+            db.session.commit()
+
+        #将上传的相册文件填入数据库
+        album.photonum = int(album.photonum) + len(filesmul)
+
+        db.session.add(album)
+        db.session.commit()
+        message = u'成功保存' + str(len(filesmul)) + '张图片,当前相册共拥有' + str(album.photonum) + '张图片'
+        flash(message=message, category='ok')
+        return redirect(url_for('user_album_upload_photo_add', id=id))
+
+    return render_template('user_album_upload_photo_add.html', photos=photos)
+
+
+# 删除相册里的图片
+@app.route('/user/album/upload/photo/del/<int:id>',methods=['GET','POST'])
+@user_login_req
+def user_album_upload_photo_del(id=None):
+    # 照片id
+    photo = Photo.query.get_or_404(id)
+    album = photo.album
+
+    # 利用 flask-uploads 拼凑出绝对路径
+    folder = session.get('user_name') + '/' + album.title
+    imagepath = photoSet.path(folder + '/' + photo.fname)
+    imagepaths = photoSet.path(folder + '/' + photo.fname_s)
+    imagepatht = photoSet.path(folder + '/' + photo.fname_t)
+
+    os.remove(imagepath)
+    os.remove(imagepaths)
+    os.remove(imagepatht)
+
+    album.photonum = album.photonum - 1
+    db.session.delete(photo)
+    db.session.add(album)
+    db.session.commit()
+
+    return redirect(url_for('user_album_upload_adddel',id = album.id))
 
 
 # 注销个人账户

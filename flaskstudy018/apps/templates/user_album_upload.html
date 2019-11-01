@@ -50,8 +50,8 @@
 
                             <div class="card-status" style="font-size: small; font-weight: 500;color: #2c4762">
                                 <a href="{{ url_for('user_album_upload_modify',id = item.id) }}">修改信息</a>
-                                <a href="{{ url_for('user_album_upload_adddel',id = item.id)}}">增删图片</ahr>
-                                <a>删除相册</a>
+                                <a href="{{ url_for('user_album_upload_photo_add',id = item.id)}}">增删图片</a>
+                                <a href="{{ url_for('user_album_upload_del',id = item.id) }}">删除相册</a>
 
                             </div>
                         </div>
