@@ -54,6 +54,8 @@ class Album(db.Model):
     desc = db.Column(db.TEXT)
     photonum = db.Column(db.Integer, default=0)
     privacy = db.Column(db.String(80), default='public')
+    # 新增推荐指数
+    recommend = db.Column(db.Integer, default=0)
     favornum = db.Column(db.Integer, default=0)
     clicknum = db.Column(db.Integer, default=0)
     uuid = db.Column(db.String(120), nullable=False)

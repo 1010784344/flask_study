@@ -67,6 +67,19 @@
 
         </div>
 
+        <div class="form-group">
+
+            {{ form.album_recmm.label }}
+            {{ form.album_recmm }}
+
+            {#打印验证器里面的错误信息#}
+            {% for error in form.album_recmm.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+
+        </div>
+
+
 
         <div class="form-group">
             {{ form.csrf_token }}

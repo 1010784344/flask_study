@@ -276,6 +276,32 @@ def user_album_upload(page=None):
 @user_login_req
 def user_album_upload_del(id=None):
 
+    album = Album.query.get_or_404(id)
+    folder = session.get('user_name') + '/' + album.title
+
+    # 删除相册下面所有图像，同时删除 photo 表中的记录
+    for photo in album.photo:
+        imagepath = photoSet.path(folder + '/' + photo.fname)
+        imagepaths = photoSet.path(folder + '/' + photo.fname_s)
+        imagepatht = photoSet.path(folder + '/' + photo.fname_t)
+        os.remove(imagepath)
+        os.remove(imagepaths)
+        os.remove(imagepatht)
+
+        db.session.delete(photo)
+        db.session.commit()
+
+    # 删除相册收藏记录
+    for favor in album.album_favor:
+        db.session.delete(favor)
+        db.session.commit()
+
+    # 删除相册本身,及文件夹
+    albumpath = photoSet.config.destination + '/' + folder
+    shutil.rmtree(albumpath)
+
+    db.session.delete(album)
+    db.session.commit()
     return redirect(url_for('user_album_upload',page=1))
 
 # 修改个人上传的相册
@@ -290,11 +316,13 @@ def user_album_upload_modify(id=None):
         form.album_desc.data = album.desc
         form.album_privacy.data = album.privacy
         form.album_tag.data = album.tag_id
+        form.album_recmm.data = album.recommend
 
     if form.validate_on_submit():
         album.desc = form.album_desc.data
         album.privacy = form.album_privacy.data
         album.tag_id = int(form.album_tag.data)
+        album.recommend = form.album_recmm.data
 
         db.session.add(album)
         db.session.commit()
@@ -387,13 +415,30 @@ def user_album_upload_photo_del(id=None):
 @user_login_req
 def user_del():
     if request.method == 'POST':
-        # 删除用户的头像文件
-        delpath = os.path.join(app.config['UPLOADS_DIR'],session.get('user_name'))
-        shutil.rmtree(delpath,ignore_errors=True)
+
         # 根据用户名查询用户
         # user = User.query.filter_by(name = session.get('user_name')).first()
         # 根据id查询用户
         user = User.query.get_or_404(int(session.get('user_id')))
+
+        # 删除用户的头像文件
+        delpath = os.path.join(app.config['UPLOADS_DIR'],session.get('user_name'))
+        shutil.rmtree(delpath,ignore_errors=True)
+
+        # 删除用户相关的引用，相册，照片，收藏之类的
+        for album in user.album:
+            for photo in album.photo:
+                db.session.delete(photo)
+                db.session.commit()
+
+            for favor in album.album_favor:
+                db.session.delete(favor)
+                db.session.commit()
+
+            db.session.delete(album)
+            db.session.commit()
+
+        # 删除用户
         db.session.delete(user)
         db.session.commit()
 
@@ -471,6 +516,7 @@ def album_create():
         album_desc = form.album_desc.data
         album_privacy = form.album_privacy.data
         album_tag = form.album_tag.data
+        album_recmm = form.album_recmm.data
 
         # 确保uuid的唯一性
         existed = True
@@ -481,7 +527,7 @@ def album_create():
             else:
                 existed = False
 
-        album = Album(title=album_title,desc=album_desc,privacy=album_privacy,tag_id=album_tag,uuid=album_uuid,
+        album = Album(title=album_title,desc=album_desc,privacy=album_privacy,tag_id=album_tag,uuid=album_uuid,recommend=album_recmm,
                       user_id=int(session.get('user_id')))
 
         db.session.add(album)

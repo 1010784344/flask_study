@@ -156,6 +156,13 @@ class AlbumInfoForm(FlaskForm):
                             render_kw={'id': 'album_tag', 'class': 'form-control'
                                   })
 
+    album_recmm = SelectField(label='推荐相册到首页',
+                            validators=[],
+                            coerce=int,
+                            choices=[(0, '不推荐' ), (1, '推荐' )],
+                            render_kw={'id': 'album_recmm', 'class': 'form-control'
+                                       })
+
     submit = SubmitField(
         render_kw={'class': 'form-control btn btn-primary', 'value': '创建相册'})
 
