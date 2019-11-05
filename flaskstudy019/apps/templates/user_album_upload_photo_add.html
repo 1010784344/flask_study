@@ -1,0 +1,108 @@
+{#这个 html 文件并没有用到 flask-wtform 的一些东西，所以验证的逻辑需要我们自己去写#}
+
+
+{% extends 'layout.html' %}
+
+{% import 'macro_paginate.html' as paginator %}
+
+{% block content %}
+ <div class="jumbotron" style="padding: 5px 20px">
+
+
+        <h1>{{ session.get('user_name') }}的个人中心</h1>
+
+ </div>
+
+
+
+    {% include 'user_menu.html' %}
+    <div class="col-md-8">
+    <div class="row">
+            {% for message in get_flashed_messages(category_filter=['err']) %}
+                <h3 style="color: red">{{ message }}</h3>
+            {% endfor %}
+            {% for message in get_flashed_messages(category_filter=['ok']) %}
+                <h3 style="color: green">{{ message }}</h3>
+            {% endfor %}
+
+        <form role="form" method="post" enctype="multipart/form-data">
+            <div class="col-md-4">
+                <div class="form-group">
+                <input type="file" id="album_upload" name="album_upload" class="form-control" multiple>
+
+            </div>
+
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group" >
+                <input type="submit" class="form-control btn-primary" value="上传相册图片">
+
+            </div>
+
+            </div>
+
+
+
+        </form>
+    </div>
+
+    <div class="row">
+            {#图片        #}
+            {% for item in photos %}
+            <div class="col-md-3">
+                <div class="media-card">
+                    <div class="panel panel-body" style="display:block; padding: 3px">
+
+                        <div class="card-body">
+                            <div class="card-image">
+                                    <img src="{{ item.imgurl}}" width="250px" height="150px">
+                            </div>
+
+                            <div class="card-status" style="font-size: small; font-weight: 500;color: #2c4762">
+                                <a href="{{ url_for('user_album_upload_photo_del',id = item.id) }}">删除此图</a>
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+            {#分页#}
+            <div class="col-md-12 text-center">
+
+                {# 注意赋值和上面是不一样的（不是一页的数据，是全部要分页的数据）#}
+                {{ paginator.paginate(albums,'user_album_upload') }}
+            </div>
+
+
+
+
+
+
+        </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block js_code %}
+<script>
+    $(document).ready(
+        function () {
+
+             $('#item-5').addClass('list-group-item-success')
+
+        }
+    )
+</script>
+{% endblock %}
+
