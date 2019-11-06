@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask_Drop</title>
+</head>
+<body>
+    <form action="{{ url_for('index') }}"
+          method="post"
+          enctype="multipart/form-data"
+    {#利用dropzone提交文件#}
+      class="dropzone"
+      id="mydropzone">
+    {#传统方式提交文件#}
+    {#<input name="file" type="file" multiple>#}
+    {#<input type="submit" value="提交表单">#}
+    </form>
+
+<script src="{{ url_for('static',filename='dropzone/dropzone.js') }}"></script>
+
+</body>
+
+</html>
