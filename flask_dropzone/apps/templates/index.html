@@ -5,18 +5,56 @@
     <title>Flask_Drop</title>
 </head>
 <body>
+
+{#方法一：form形式#}
     <form action="{{ url_for('index') }}"
           method="post"
           enctype="multipart/form-data"
-    {#利用dropzone提交文件#}
+{#    利用dropzone提交文件#}
       class="dropzone"
       id="mydropzone">
-    {#传统方式提交文件#}
-    {#<input name="file" type="file" multiple>#}
-    {#<input type="submit" value="提交表单">#}
+{#    传统方式提交文件#}
+{#    <input name="file" type="file" multiple>#}
+{#    <input type="submit" value="提交表单">#}
     </form>
 
+
+
+{#方法二,三 共用#}
+{#<div id="myId" style="display: block;width: 600px;height: 300px;background: green"></div>#}
+
+
+<script src="{{ url_for('static',filename='jquery/jquery.min.js') }}"></script>
+
 <script src="{{ url_for('static',filename='dropzone/dropzone.js') }}"></script>
+<script>
+
+    {#方法二：原生js方式#}
+{#    等窗口加载完毕再执行回调函数#}
+{#    window.onload = function () {#}
+{#        var myDropzone = new Dropzone("div#myId", { url: "{{ url_for('index') }}"});#}
+{#    }#}
+
+
+    {#方法三：jquery 方式#}
+    {#$("div#myId").dropzone({ url: "{{ url_for('index') }}" });#}
+
+
+{#  方法一form形式 的相关配置信息  #}
+    // "mydropzone" is the camelized version of the HTML element's ID
+    Dropzone.options.mydropzone = {
+  paramName: "file", // The name that will be used to transfer the file
+  maxFilesize: 2, // MB
+  accept: function(file, done) {
+    if (file.name == "justinbieber.jpg") {
+      done("Naha, you don't.");
+    }
+    else { done(); }
+  }
+};
+
+
+</script>
 
 </body>
 
