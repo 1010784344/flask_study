@@ -1,8 +1,11 @@
 from flask import Flask,request
 from flask import render_template
-
+import config
 # 创建了一个flask 类的实例
 app =  Flask(__name__)
+
+# 通过配置文件设置调试模式方法二：
+app.config.from_object(config)
 
 # 路由
 @app.route('/')
@@ -55,4 +58,4 @@ def amaze():
 if __name__ == '__main__':
     # 循环监听浏览器5000端口的输入
     app.run(debug=True)
-    # 调试模式
+    # 设置调试模式方法一：
