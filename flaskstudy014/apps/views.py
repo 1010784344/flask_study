@@ -229,6 +229,9 @@ def user_del():
 def user_login():
     form = LoginForm()
 
+    # 跳转到登录页面，如果有next参数，登录完毕自动跳转到之前的浏览页面
+    next_url = request.args.get('next')
+
     if form.validate_on_submit():
         user_name = request.form['user_name']
         user_pwd = request.form['user_pwd']
@@ -247,7 +250,13 @@ def user_login():
                 # 手动加入cookie（session） 信息
                 session['user_name'] = user_name
                 session['user_id'] = query_user.id
-                return render_template('index.html')
+
+                # 判断如果有next参数，登录完毕自动跳转到之前的浏览页面
+                if next_url:
+                    print(next_url)
+                    return redirect(next_url)
+                else:
+                    return render_template('index.html')
 
     return render_template('user_login.html',form = form)
 
