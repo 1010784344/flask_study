@@ -28,7 +28,7 @@ class RegistForm(FlaskForm):
 
     user_pwd = PasswordField(label='用户密码',
                              validators=[DataRequired(message='用户密码不能为空！'),
-                                                     Length(min=3, max=5, message='用户密码长度在3到5个字符之间！')],
+                                                     Length(min=3, max=6, message='用户密码长度在3到5个字符之间！')],
                             render_kw={'id': 'user_pwd', 'class': 'form-control'
                                 , 'placeholder': '输入用户密码'})
 
@@ -87,7 +87,7 @@ class PwdForm(FlaskForm):
 
     new_pwd = PasswordField(label='用户新密码',
                              validators=[DataRequired(message='用户新密码不能为空！'),
-                                         Length(min=3, max=5, message='用户密码长度在3到5个字符之间！')],
+                                         Length(min=3, max=6, message='用户密码长度在3到5个字符之间！')],
                              render_kw={'id': 'new_pwd', 'class': 'form-control'
                                  , 'placeholder': '输入用户新密码'})
 
