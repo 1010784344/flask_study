@@ -12,6 +12,8 @@ from flask import redirect,url_for,flash,session,make_response
 from flask import render_template,request
 
 from apps import app
+ctx = app.app_context()
+ctx.push()
 from apps.models import User, Album, Photo, AlbumTag, AlbumFavor
 from apps.forms import RegistForm,LoginForm,PwdForm,InfoForm,AlbumInfoForm,AlbumUploadForm
 from apps import db
@@ -780,3 +782,4 @@ def page_not_found(error):
     resp = make_response(render_template('page_not_found.html'), 404)
     return resp
 
+ctx.pop()

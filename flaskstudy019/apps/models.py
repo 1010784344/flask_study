@@ -96,6 +96,10 @@ class Photo(db.Model):
 
 
 if __name__ == '__main__':
+    from apps import app
+    ctx = app.app_context()
+    ctx.push()
+
     flag = 1
     if flag == 0:
         db.drop_all()
@@ -122,7 +126,7 @@ if __name__ == '__main__':
 
         db.session.commit()
 
-
+    ctx.pop()
 
 
 

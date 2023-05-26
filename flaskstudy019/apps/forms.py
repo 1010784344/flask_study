@@ -8,7 +8,7 @@ from flask_wtf.file import FileField,FileAllowed,FileRequired
 # 导入字段
 from wtforms import StringField,PasswordField,IntegerField,DateField,SubmitField,TextAreaField,SelectField
 # 验证器(用来对输入的数据进行一些限制)
-from wtforms.validators import DataRequired,Length,NumberRange,Email,Regexp
+from wtforms.validators import DataRequired,Length,NumberRange,Regexp
 
 
 from flask_uploads import IMAGES
@@ -34,7 +34,7 @@ class RegistForm(FlaskForm):
 
     user_email = StringField(label='用户邮箱',
                              validators=[DataRequired(message='用户邮箱不能为空！'),
-                                                       Email(message='用户邮箱格式不对！')],
+                                                       ],
                              render_kw={'id': 'user_email', 'class': 'form-control'
                                , 'placeholder': '输入用户邮箱'})
 
@@ -107,7 +107,7 @@ class InfoForm(FlaskForm):
 
     user_email = StringField(label='用户邮箱',
                              validators=[DataRequired(message='用户邮箱不能为空！'),
-                                                       Email(message='用户邮箱格式不对！')],
+                                                       ],
                              render_kw={'id': 'user_email', 'class': 'form-control'
                                , 'placeholder': '输入用户邮箱'})
 
